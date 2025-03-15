@@ -1,0 +1,25 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { generateToken } from '../lib/generateToken';
+
+export const prerender = false;
+
+const token = generateToken();
+Astro.cookies.set('logToken', token, 
+{
+    httpOnly: true, // Prevents JavaScript access
+    sameSite: "strict", // Protects against CSRF
+    maxAge: 60 * 15,
+  }
+);
+
+---
+
+<Layout title="Login Form">
+    <form method="post" action="/login" class="mt-5">
+        <h1 class="mb-5">Login</h1>
+        <input type="text" placeholder="Username" name="username" required />
+        <input type="password" placeholder="Password" name="password" required />
+        <button type="submit">Login</button>
+    </form>
+</Layout>

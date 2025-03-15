@@ -1,18 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
-//import ContextAlert from '../components/ContextAlert.astro';
 import Markdown from '../components/Markdown.astro';
-import { generateToken } from '../lib/generateToken';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 
-const token = generateToken();
-Astro.cookies.set('logToken', token, 
-{
-    path: "/", // Cookie is accessible across the entire site
-    httpOnly: true, // Prevents JavaScript access
-    sameSite: "strict", // Protects against CSRF
-    maxAge: 60 * 15, // 1 week
-  }
-);
+// const token = generateToken();
+// Astro.cookies.set('logToken', token, 
+// {
+//     path: "/", // Cookie is accessible across the entire site
+//     httpOnly: true, // Prevents JavaScript access
+//     sameSite: "strict", // Protects against CSRF
+//     maxAge: 60 * 15,
+//   }
+// );
 
 const explainer = `
 Sebuah platform untuk melihat tren hasil pengujian CTDI.
@@ -23,9 +23,14 @@ Diharapkan dapat mengevaluasi hasil pengujian CTDI baik CTDI Kepala maupun CTDI 
 
 <Layout title="CTDI Home">
     <!-- <ContextAlert class="mb-4" /> -->
-    <h1 class="mb-10">Data Pengujian CTDI All Time</h1>
-    <Markdown content={explainer} class="text-lg mb-10" />
-    <p class="mb-8">
-        <a href="/ctdi" class="btn btn-lg btn-primary sm:btn-wide">Manage Now</a>
-    </p>
+    <Header />
+    <main class="grow">
+        <h1 class="mb-10">Data Pengujian CTDI All Time</h1>
+        <Markdown content={explainer} class="text-lg mb-10" />
+        <p class="mb-8">
+            <a href="/ctdi" class="btn btn-lg btn-primary sm:btn-wide">Manage Now</a>
+        </p>
+    </main>
+    <Footer />
+    
 </Layout>
