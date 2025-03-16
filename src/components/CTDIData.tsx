@@ -19,7 +19,7 @@ export default function CTDIData() {
 
   const fetchDepartures = async () => {
     try {
-      const response = await fetch("https://thisone-astro/api/ctdi.json", {
+      const response = await fetch("https://thisone-astro.netlify.app/api/ctdi.json", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
