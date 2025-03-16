@@ -7,8 +7,7 @@ export const prerender = false;
 
 export const POST: APIRoute = async ({ request, cookies }) => {
   const body = await request.json();
-  const email = body.email;
-  const password = body.password;
+  const { email, password } = body;
   //console.log(password);
 
   if (!email || !password) {
