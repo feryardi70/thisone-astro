@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { generateToken } from '../lib/generateToken';
+import LoginComp from '../components/LoginComp'
 
 export const prerender = false;
 
@@ -13,13 +14,15 @@ Astro.cookies.set('logToken', token,
   }
 );
 
+const isAuthorized = Astro.cookies.has('auth_token');
+
+if(isAuthorized == true){
+    return Astro.redirect("/ctdi");
+} else {
+    console.log('not login yet');
+}
 ---
 
 <Layout title="Login Form">
-    <form method="post" action="/login" class="mt-5">
-        <h1 class="mb-5">Login</h1>
-        <input type="text" placeholder="Username" name="username" required />
-        <input type="password" placeholder="Password" name="password" required />
-        <button type="submit">Login</button>
-    </form>
+    <LoginComp client:load/>
 </Layout>
