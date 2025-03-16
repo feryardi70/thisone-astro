@@ -32,7 +32,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
   const referer = request.headers.get("referer");
   if (referer !== "https://thisone-astro.netlify.app/login") {
-    //   if (referer !== "http://localhost:4321/login") {
+    // if (referer !== "http://localhost:4321/login") {
     return new Response(
       JSON.stringify({
         msg: "unauthorized",
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const serverToken = import.meta.env.SERVER_TOKEN;
 
   const resp = await fetch(`https://thisone.my.id/api/user.php?email=${email}`, {
-    //   const resp = await fetch(`http://localhost/api/user.php?email=${email}`, {
+    // const resp = await fetch(`http://localhost/api/user.php?email=${email}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${serverToken}`,

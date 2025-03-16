@@ -19,7 +19,7 @@ export default function SignIn() {
       }
 
       const result = await fetch("https://thisone-astro.netlify.app/api/login.json", {
-        //   const result = await fetch("http://localhost:4321/api/login.json", {
+        // const result = await fetch("http://localhost:4321/api/login.json", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

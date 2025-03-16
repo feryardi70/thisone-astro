@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CTDIData from '../components/CTDIData';
+import { verifyToken } from '../lib/generateToken';
+
+export const prerender = false;
+
+const authToken = Astro.cookies.get('auth_token')?.value;
+const decoded = verifyToken(authToken);
+
+
+if(!decoded){
+    return Astro.redirect("/login");
+} else {
+    console.log('ok');
+}
+---
+
+<Layout title="CTDI Dashboard">
+    <CTDIData client:load />
+</Layout>

@@ -1,0 +1,183 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+export const prerender = false;
+
+const ctdi = {
+    parameter_uji: "",
+    instansi: "",
+    data_pesawat: '',
+    CTDI_Vol_ukur: '',
+    CTDI_Vol_konsol: '',
+    deviasi: '',
+    tanggal_uji: "",  
+};
+---
+<Layout title="Edit CTDI Data">
+	<div class="flex h-screen justify-center items-center">
+        <div class="px-5 py-5 shadow-lg max-w-xl min-h-96 w-full border-t-4 border-fuchsia-500">
+          <h2 class="mb-5 text-center text-3xl">Form Add CTDI Data</h2>
+  
+          <form id="formDeparture" class="flex flex-col text-blue-950">
+            <div class="flex justify-between">
+                <div class="flex flex-col w-[48%]">
+                  <label for="parameter_uji" class="mb-1 text-slate-500">
+                    Parameter Uji
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border-2 border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="parameter_uji"
+                    name="parameter_uji"
+                    value={ctdi.parameter_uji}
+                    placeholder="CTDI Kepala/Badan"
+                    aria-describedby="parameter_uji"
+                  />
+        
+                  <label for="instansi" class="mb-1 text-slate-500">
+                    Nama Instansi
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="instansi"
+                    name="instansi"
+                    value={ctdi.instansi}
+                    placeholder="nama instansi anda"
+                    aria-describedby="instansi"
+                  />
+        
+                  <label for="data_pesawat" class="mb-1 text-slate-500">
+                    Data Pesawat
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="data_pesawat"
+                    name="data_pesawat"
+                    value={ctdi.data_pesawat}
+                    placeholder="pabrikan: ... tipe: ... SN: ..."
+                    aria-describedby="data_pesawat"
+                  />
+        
+                  <label for="CTDI_Vol_ukur" class="mb-1 text-slate-500">
+                    CTDI Vol terukur
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="CTDI_Vol_ukur"
+                    name="CTDI_Vol_ukur"
+                    value={ctdi.CTDI_Vol_ukur}
+                    aria-describedby="CTDI_Vol_ukur"
+                  />
+                </div>
+        
+                <div class="flex flex-col w-[48%]">
+                  <label for="CTDI_Vol_konsol" class="mb-1 text-slate-500">
+                    CTDI Vol Konsol
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="CTDI_Vol_konsol"
+                    name="CTDI_Vol_konsol"
+                    value={ctdi.CTDI_Vol_konsol}
+                    aria-describedby="CTDI_Vol_konsol"
+                  />
+        
+                  <label for="deviasi" class="mb-1 text-slate-500">
+                    %Deviasi
+                  </label>
+                  <input
+                    type="text"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="deviasi"
+                    name="deviasi"
+                    value={ctdi.deviasi}
+                    aria-describedby="deviasi"
+                  />
+        
+                  <label for="tanggal_uji" class="mb-1 text-slate-500">
+                    tanggal_uji
+                  </label>
+                  <input
+                    type="date"
+                    class="px-2 py-2 mb-5 border border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                    id="tanggal_uji"
+                    name="tanggal_uji"
+                    value={ctdi.tanggal_uji}
+                    aria-describedby="tanggal_uji"
+                  />
+                </div>
+              </div>
+            <button type="submit" class="px-2 py-2 bg-fuchsia-500 rounded text-white">
+              Add
+            </button>
+          </form>
+        </div>
+      </div>
+</Layout>
+
+<script>
+    // Wait for the DOM content to be fully loaded
+  document.addEventListener("DOMContentLoaded", () => {
+    // Get the form element
+    const form = document.getElementById("formDeparture");
+
+    if(form){
+      form.addEventListener("submit", async (event) => {
+      event.preventDefault(); // Prevent the default form submission
+
+      // Collect data from the form
+      const parameter_uji = document.querySelector<HTMLInputElement>("#parameter_uji")?.value || "";
+      const instansi = document.querySelector<HTMLInputElement>("#instansi")?.value || "";
+      const data_pesawat = document.querySelector<HTMLInputElement>("#data_pesawat")?.value || "";
+      const CTDI_Vol_ukur = document.querySelector<HTMLInputElement>("#CTDI_Vol_ukur")?.value || "";
+      const CTDI_Vol_konsol = document.querySelector<HTMLInputElement>("#CTDI_Vol_konsol")?.value || "";
+      const deviasi = document.querySelector<HTMLInputElement>("#deviasi")?.value || "";
+      const tanggal_uji = document.querySelector<HTMLInputElement>("#tanggal_uji")?.value || "";
+
+      // Construct the payload
+      const payload = {
+        parameter_uji,
+        instansi,
+        data_pesawat,
+        CTDI_Vol_ukur,
+        CTDI_Vol_konsol,
+        deviasi,
+        tanggal_uji,
+      };
+
+      // Send the PUT request
+      try {
+        const response = await fetch(`/api/ctdi.json`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.status == 201) {
+          // Handle success (e.g., show a success message or redirect)
+          alert("successfully add CTDI data");
+
+          window.location.href = '/ctdi';
+        } else {
+          // Handle errors
+          const errorData = await response.json();
+          console.error("Error updating CTDI:", errorData);
+          alert("Failed to add CTDI. Please try again.");
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        alert("A network error occurred. Please try again.");
+      }
+    });
+    } else {
+        console.error("Form element not found");
+        alert("Form Empty");
+    }
+  });
+</script>
