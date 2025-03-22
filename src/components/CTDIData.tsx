@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import SpinnerCss from "./Spinner";
 import { baseUrl } from "../lib/baseUrl";
+import Select from "react-select";
 
 interface CTDI {
   id: number;
@@ -22,16 +23,12 @@ export default function CTDIData() {
 
   const fetchDepartures = async (page: number) => {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
       const response = await fetch(`${baseUrl}/api/ctdi.json?page=${page}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
 
-      clearTimeout(timeoutId);
-      const { data, pagination } = (await response.json()) as any;
+      const { data } = (await response.json()) as any;
 
       setCtdi(data.data);
       setTotalPages(data.pagination.total_pages);
@@ -56,12 +53,28 @@ export default function CTDIData() {
     year: "",
   });
 
+  const optionValues = [
+    { value: "parameter_uji", label: "Parameter Uji" },
+    { value: "instansi", label: "Instansi" },
+    { value: "data_pesawat", label: "Data Pesawat" },
+    { value: "date", label: "Tanggal" },
+    { value: "year", label: "Tahun" },
+  ];
+
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
   const handleSearch = async () => {
     setIsLoading(true);
     const queryParams = new URLSearchParams();
+
+    // Check if all filters are empty before appending query params
+    const hasFilters = selectedFilters.some((filter) => filters[filter] && filters[filter] !== "");
+
+    if (!hasFilters) {
+      window.location.reload();
+      return;
+    }
 
     selectedFilters.forEach((filter) => {
       if (filters[filter]) {
@@ -73,7 +86,7 @@ export default function CTDIData() {
 
     try {
       const response = await fetch(`/api/ctdiSearch.json?${queryParams}`);
-      const { data, pagination } = await response.json();
+      const { data } = await response.json();
 
       setCtdi(data.data);
       setTotalPages(data.pagination?.total_pages);
@@ -186,7 +199,7 @@ export default function CTDIData() {
             <p className="text-fuchsia-50">Please select the data you want to filter by below.</p>
 
             {/* Dropdown to select filters */}
-            <select
+            {/* <select
               multiple
               onChange={(e) => {
                 const values = Array.from(e.target.selectedOptions, (option) => option.value);
@@ -199,7 +212,17 @@ export default function CTDIData() {
               <option value="data_pesawat">Data Pesawat</option>
               <option value="date">Tanggal</option>
               <option value="year">Tahun</option>
-            </select>
+            </select> */}
+
+            <Select
+              onChange={(selectedOptions) => {
+                setSelectedFilters(selectedOptions.map((option) => option.value));
+              }}
+              options={optionValues}
+              isMulti
+              className="w-60"
+              placeholder="Select filters..."
+            />
 
             {/* Dynamic Inputs Based on Selected Filters */}
             <div className="flex">
