@@ -2,6 +2,7 @@ import { type APIRoute } from "astro";
 import { generateAuthToken, verifyToken } from "../../lib/generateToken";
 import checkPass from "../../lib/bcompare";
 import { serialize } from "cookie";
+import { baseUrl, APIUrl } from "../../lib/baseUrl";
 
 export const prerender = false;
 
@@ -20,6 +21,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   const token = cookies.get("logToken")?.value;
+  //console.log(token);
 
   if (!token) {
     return new Response(
@@ -31,8 +33,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   const referer = request.headers.get("referer");
-  if (referer !== "https://thisone-astro.netlify.app/login") {
-    // if (referer !== "http://localhost:4321/login") {
+  //console.log(referer);
+  if (referer !== `${baseUrl}/login`) {
     return new Response(
       JSON.stringify({
         msg: "unauthorized",
@@ -42,6 +44,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   }
 
   const decoded = verifyToken(token);
+  //console.log(decoded);
 
   if (!decoded) {
     return new Response(
@@ -55,8 +58,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   //const key = urlParams.searchParams.get('key');
   const serverToken = import.meta.env.SERVER_TOKEN;
 
-  const resp = await fetch(`https://thisone.my.id/api/user.php?email=${email}`, {
-    // const resp = await fetch(`http://localhost/api/user.php?email=${email}`, {
+  const resp = await fetch(`${APIUrl}/api/user.php?email=${email}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${serverToken}`,
@@ -99,6 +101,24 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   );
 
   return new Response(JSON.stringify({ message: "Login successful" }), {
+    status: 200,
+    headers,
+  });
+};
+
+export const PATCH: APIRoute = async ({ request, cookies }) => {
+  const headers = new Headers();
+  headers.append(
+    "Set-Cookie",
+    serialize("auth_token", "LOGOUT", {
+      httpOnly: true,
+      sameSite: "strict",
+      path: "/",
+      maxAge: 6,
+    })
+  );
+
+  return new Response(JSON.stringify({ message: "Logout successful" }), {
     status: 200,
     headers,
   });

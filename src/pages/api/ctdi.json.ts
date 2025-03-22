@@ -1,13 +1,15 @@
 import type { APIRoute } from "astro";
 import { verifyToken } from "../../lib/generateToken";
 import { randstr } from "../../lib/randstr";
+import { APIUrl } from "../../lib/baseUrl";
 
 export const prerender = false;
 
 export const GET: APIRoute = async ({ request, cookies }) => {
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page"); // Default to 1 if missing
+  //console.log("Page:", page);
   const token = cookies.get("auth_token")?.value;
-  // const body = await request.json();
-  // const { email, password } = body;
 
   if (!token) {
     return new Response(
@@ -30,21 +32,21 @@ export const GET: APIRoute = async ({ request, cookies }) => {
   }
 
   const ctdiToken = import.meta.env.CTDI_SECRET;
-  const resp = await fetch(`https://thisone.my.id/api/ctdi.php`, {
-    // const resp = await fetch(`http://localhost/api/ctdi.php`, {
+
+  const resp = await fetch(`${APIUrl}/api/ctdi.php?page=${page}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${ctdiToken}`,
     },
   });
   const dataCTDI = await resp.json();
-  const data = dataCTDI.data;
-  //console.log(data);
+  //const data = dataCTDI.data;
+  //console.log(dataCTDI);
 
   return new Response(
     JSON.stringify({
       msg: "success",
-      data: data,
+      data: dataCTDI,
     }),
     { status: 200 }
   );
@@ -87,8 +89,7 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
     deviasi,
     tanggal_uji,
   };
-  const resp = await fetch(`https://thisone.my.id/api/ctdi.php`, {
-    // const resp = await fetch(`http://localhost/api/ctdi.php`, {
+  const resp = await fetch(`${APIUrl}/api/ctdi.php`, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${ctdiToken}`,
@@ -146,8 +147,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     tanggal_uji,
   };
 
-  const resp = await fetch(`https://thisone.my.id/api/ctdi.php`, {
-    // const resp = await fetch(`http://localhost/api/ctdi.php`, {
+  const resp = await fetch(`${APIUrl}/api/ctdi.php`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${ctdiToken}`,

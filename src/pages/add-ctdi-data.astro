@@ -13,7 +13,7 @@ const ctdi = {
     tanggal_uji: "",  
 };
 ---
-<Layout title="Edit CTDI Data">
+<Layout title="Add CTDI Data">
 	<div class="flex h-screen justify-center items-center">
         <div class="px-5 py-5 shadow-lg max-w-xl min-h-96 w-full border-t-4 border-fuchsia-500">
           <h2 class="mb-5 text-center text-3xl">Form Add CTDI Data</h2>
@@ -23,16 +23,20 @@ const ctdi = {
                 <div class="flex flex-col w-[48%]">
                   <label for="parameter_uji" class="mb-1 text-slate-500">
                     Parameter Uji
-                  </label>
-                  <input
-                    type="text"
+                </label>
+                <select
                     class="px-2 py-2 mb-5 border-2 border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
                     id="parameter_uji"
                     name="parameter_uji"
-                    value={ctdi.parameter_uji}
-                    placeholder="CTDI Kepala/Badan"
                     aria-describedby="parameter_uji"
-                  />
+                >
+                    <option value="CTDI Kepala" selected={ctdi.parameter_uji === "CTDI Kepala"}>
+                        CTDI Kepala
+                    </option>
+                    <option value="CTDI Badan" selected={ctdi.parameter_uji === "CTDI Badan"}>
+                        CTDI Badan
+                    </option>
+                </select>
         
                   <label for="instansi" class="mb-1 text-slate-500">
                     Nama Instansi
@@ -69,6 +73,7 @@ const ctdi = {
                     id="CTDI_Vol_ukur"
                     name="CTDI_Vol_ukur"
                     value={ctdi.CTDI_Vol_ukur}
+                    placeholder="0.00"
                     aria-describedby="CTDI_Vol_ukur"
                   />
                 </div>
@@ -83,6 +88,7 @@ const ctdi = {
                     id="CTDI_Vol_konsol"
                     name="CTDI_Vol_konsol"
                     value={ctdi.CTDI_Vol_konsol}
+                    placeholder="0.00"
                     aria-describedby="CTDI_Vol_konsol"
                   />
         
@@ -95,6 +101,7 @@ const ctdi = {
                     id="deviasi"
                     name="deviasi"
                     value={ctdi.deviasi}
+                    placeholder="0.00"
                     aria-describedby="deviasi"
                   />
         
@@ -111,8 +118,11 @@ const ctdi = {
                   />
                 </div>
               </div>
-            <button type="submit" class="px-2 py-2 bg-fuchsia-500 rounded text-white">
+            <button id="btnSend" type="submit" class="px-2 py-2 bg-fuchsia-500 rounded text-white">
               Add
+            </button>
+            <button id="btnLoading" type="submit" class="hidden px-2 py-2 bg-fuchsia-500 rounded text-white">
+              Add Data... Please wait...
             </button>
           </form>
         </div>
@@ -124,10 +134,15 @@ const ctdi = {
   document.addEventListener("DOMContentLoaded", () => {
     // Get the form element
     const form = document.getElementById("formDeparture");
+    const btnSend = document.getElementById("btnSend");
+    const btnLoading = document.getElementById("btnLoading");
 
     if(form){
       form.addEventListener("submit", async (event) => {
       event.preventDefault(); // Prevent the default form submission
+
+      btnLoading.classList.toggle("hidden");
+      btnSend.classList.toggle("hidden");
 
       // Collect data from the form
       const parameter_uji = document.querySelector<HTMLInputElement>("#parameter_uji")?.value || "";
@@ -161,16 +176,22 @@ const ctdi = {
 
         if (response.status == 201) {
           // Handle success (e.g., show a success message or redirect)
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
           alert("successfully add CTDI data");
 
           window.location.href = '/ctdi';
         } else {
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
           // Handle errors
           const errorData = await response.json();
           console.error("Error updating CTDI:", errorData);
           alert("Failed to add CTDI. Please try again.");
         }
       } catch (error) {
+        btnLoading.classList.toggle("hidden");
+        btnSend.classList.toggle("hidden");
         console.error("Network error:", error);
         alert("A network error occurred. Please try again.");
       }

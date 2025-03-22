@@ -1,29 +1,21 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import { baseUrl } from '../../lib/baseUrl';
 
 export const prerender = false;
 
 const { id } = Astro.params;
-console.log(id);
-
-// const baseUrl = Astro.site || "http://localhost:4321";
-const baseUrl = Astro.site || "https://thisone-astro.netlify.app";
+//console.log(id);
 
 const response = await fetch(`${baseUrl}/api/ctdi/${id}.json`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
 });
 
-// if (!response.ok) {
-//     const errorText = await response.text(); // Read as text for debugging
-//     console.error(`HTTP Error: ${response.status} - ${response.statusText}`);
-//     console.error("Response body:", errorText);
-//     throw new Error("API request failed. Check the logs.");
-// }
-
 const data = await response.json() as any;
 //console.log(data);
 const ctdi = data.data;
+const selectedValue = ctdi.parameter_uji;
 ---
 <Layout title="Edit CTDI Data">
 	<div class="flex h-screen justify-center items-center">
@@ -36,15 +28,19 @@ const ctdi = data.data;
                   <label for="parameter_uji" class="mb-1 text-slate-500">
                     Parameter Uji
                   </label>
-                  <input
-                    type="text"
-                    class="px-2 py-2 mb-5 border-2 border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
-                    id="parameter_uji"
-                    name="parameter_uji"
-                    value={ctdi.parameter_uji}
-                    placeholder="masukkan kode parameter_uji"
-                    aria-describedby="parameter_uji"
-                  />
+                  <select
+                  class="px-2 py-2 mb-5 border-2 border-fuchsia-200 focus:border-blue-700 rounded-md outline-none"
+                  id="parameter_uji"
+                  name="parameter_uji"
+                  aria-describedby="parameter_uji"
+                  >
+                  <option value="CTDI Kepala" selected={selectedValue === "CTDI Kepala"}>
+                    CTDI Kepala
+                  </option>
+                  <option value="CTDI Badan" selected={selectedValue === "CTDI Badan"}>
+                    CTDI Badan
+                  </option>
+                  </select>
         
                   <label for="instansi" class="mb-1 text-slate-500">
                     Nama Instansi
@@ -127,8 +123,11 @@ const ctdi = data.data;
                   <input type="hidden" name="databaseId" id="databaseId" value={ctdi.databaseId} />
                 </div>
               </div>
-            <button type="submit" class="px-2 py-2 bg-fuchsia-500 rounded text-white">
+            <button id="btnSend" type="submit" class="px-2 py-2 bg-fuchsia-500 rounded text-white">
               Edit
+            </button>
+            <button id="btnLoading" type="submit" class="hidden px-2 py-2 bg-fuchsia-500 rounded text-white">
+              Editing Data... Please Wait...
             </button>
           </form>
         </div>
@@ -140,10 +139,15 @@ const ctdi = data.data;
   document.addEventListener("DOMContentLoaded", () => {
     // Get the form element
     const form = document.getElementById("formDeparture");
+    const btnSend = document.getElementById("btnSend");
+    const btnLoading = document.getElementById("btnLoading");
 
     if(form){
       form.addEventListener("submit", async (event) => {
       event.preventDefault(); // Prevent the default form submission
+
+      btnLoading.classList.toggle("hidden");
+      btnSend.classList.toggle("hidden");
 
       // Collect data from the form
       const id = document.querySelector<HTMLInputElement>("#id")?.value || "";
@@ -180,17 +184,23 @@ const ctdi = data.data;
         });
 
         if (response.status == 200) {
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
           // Handle success (e.g., show a success message or redirect)
           alert("successfully update CTDI data");
 
           window.location.href = '/ctdi';
         } else {
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
           // Handle errors
           const errorData = await response.json();
           console.error("Error updating departure:", errorData);
           alert("Failed to update departure. Please try again.");
         }
       } catch (error) {
+        btnLoading.classList.toggle("hidden");
+        btnSend.classList.toggle("hidden");
         console.error("Network error:", error);
         alert("A network error occurred. Please try again.");
       }

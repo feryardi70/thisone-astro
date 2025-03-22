@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { baseUrl } from "../lib/baseUrl";
 
 export default function SignIn() {
   const [formState, setFormState] = useState({ email: "", password: "" });
@@ -18,8 +19,7 @@ export default function SignIn() {
         return;
       }
 
-      const result = await fetch("https://thisone-astro.netlify.app/api/login.json", {
-        // const result = await fetch("http://localhost:4321/api/login.json", {
+      const result = await fetch(`${baseUrl}/api/login.json`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -32,7 +32,7 @@ export default function SignIn() {
       //console.log("Response from fetch:", responseData);
 
       if (result.ok) {
-        alert("Login Successfull");
+        //alert("Login Successfull");
         window.location.href = "/ctdi";
       } else {
         const data = await result.json();
