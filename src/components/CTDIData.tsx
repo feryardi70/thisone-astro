@@ -46,18 +46,18 @@ export default function CTDIData() {
   const [selectedDepartureId, setSelectedDepartureId] = useState<number | null>(null);
 
   const [filters, setFilters] = useState({
-    parameter_uji: "",
+    // parameter_uji: "",
     instansi: "",
-    data_pesawat: "",
-    date: "",
+    // data_pesawat: "",
+    // date: "",
     year: "",
   });
 
   const optionValues = [
-    { value: "parameter_uji", label: "Parameter Uji" },
+    // { value: "parameter_uji", label: "Parameter Uji" },
     { value: "instansi", label: "Instansi" },
-    { value: "data_pesawat", label: "Data Pesawat" },
-    { value: "date", label: "Tanggal" },
+    // { value: "data_pesawat", label: "Data Pesawat" },
+    // { value: "date", label: "Tanggal" },
     { value: "year", label: "Tahun" },
   ];
 
@@ -89,6 +89,7 @@ export default function CTDIData() {
       const { data } = await response.json();
 
       setCtdi(data.data);
+      //console.log(data.data);
       setTotalPages(data.pagination?.total_pages);
     } catch (error) {
       console.error(error);
@@ -227,10 +228,10 @@ export default function CTDIData() {
             {/* Dynamic Inputs Based on Selected Filters */}
             <div className="flex">
               <div className="flex gap-4">
-                {selectedFilters.includes("parameter_uji") && <input className="py-3 pl-1" type="text" placeholder="Parameter Uji" value={filters.parameter_uji} onChange={(e) => setFilters({ ...filters, parameter_uji: e.target.value })} />}
+                {/* {selectedFilters.includes("parameter_uji") && <input className="py-3 pl-1" type="text" placeholder="Parameter Uji" value={filters.parameter_uji} onChange={(e) => setFilters({ ...filters, parameter_uji: e.target.value })} />} */}
                 {selectedFilters.includes("instansi") && <input className="py-1 pl-1" type="text" placeholder="Instansi" value={filters.instansi} onChange={(e) => setFilters({ ...filters, instansi: e.target.value })} />}
-                {selectedFilters.includes("data_pesawat") && <input className="py-1 pl-1" type="text" placeholder="Data Pesawat" value={filters.data_pesawat} onChange={(e) => setFilters({ ...filters, data_pesawat: e.target.value })} />}
-                {selectedFilters.includes("date") && <input type="date" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} />}
+                {/* {selectedFilters.includes("data_pesawat") && <input className="py-1 pl-1" type="text" placeholder="Data Pesawat" value={filters.data_pesawat} onChange={(e) => setFilters({ ...filters, data_pesawat: e.target.value })} />}
+                {selectedFilters.includes("date") && <input type="date" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} />} */}
                 {selectedFilters.includes("year") && <input className="py-1 pl-1" type="number" placeholder="Year" value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })} />}
               </div>
 
