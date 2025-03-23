@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import SpinnerCss from "./Spinner";
-import { baseUrl } from "../lib/baseUrl";
+//import { baseUrl } from "../lib/baseUrl";
 import Select from "react-select";
 
 interface CTDI {
@@ -16,42 +16,54 @@ interface CTDI {
 }
 
 export default function CTDIData() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [ctdi, setCtdi] = useState<CTDI[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const fetchDepartures = async (page: number) => {
-    try {
-      const response = await fetch(`${baseUrl}/api/ctdi.json?page=${page}`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const { data } = (await response.json()) as any;
-
-      setCtdi(data.data);
-      setTotalPages(data.pagination.total_pages);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchDepartures(currentPage);
-  }, [currentPage]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDepartureId, setSelectedDepartureId] = useState<number | null>(null);
-
-  const [filters, setFilters] = useState({
+  const [searchFilters, setSearchFilters] = useState({
     // parameter_uji: "",
     instansi: "",
     // data_pesawat: "",
     // date: "",
     year: "",
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [ctdi, setCtdi] = useState<CTDI[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchPage, setSearchPage] = useState(1);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      const queryParams = new URLSearchParams();
+
+      if (isSearching) {
+        Object.entries(searchFilters).forEach(([key, value]) => {
+          if (value) queryParams.append(key, value);
+        });
+        queryParams.append("page", searchPage.toString());
+      } else {
+        queryParams.append("page", currentPage.toString());
+      }
+
+      try {
+        const response = await fetch(isSearching ? `/api/ctdiSearch.json?${queryParams}` : `/api/ctdi.json?page=${queryParams.get("page")}`);
+        const { data } = await response.json();
+
+        setCtdi(data.data);
+        setTotalPages(data.pagination?.total_pages);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [currentPage, searchPage, isSearching]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDepartureId, setSelectedDepartureId] = useState<number | null>(null);
 
   const optionValues = [
     // { value: "parameter_uji", label: "Parameter Uji" },
@@ -69,20 +81,21 @@ export default function CTDIData() {
     const queryParams = new URLSearchParams();
 
     // Check if all filters are empty before appending query params
-    const hasFilters = selectedFilters.some((filter) => filters[filter] && filters[filter] !== "");
-
-    if (!hasFilters) {
+    if (Object.values(searchFilters).every((value) => value === "")) {
+      setIsSearching(false); // No filters = show all data
+      setCurrentPage(1);
       window.location.reload();
       return;
     }
 
-    selectedFilters.forEach((filter) => {
-      if (filters[filter]) {
-        queryParams.append(filter, filters[filter]);
-      }
+    setIsSearching(true); // Search is active
+    setSearchPage(1);
+
+    Object.entries(searchFilters).forEach(([key, value]) => {
+      if (value) queryParams.append(key, value);
     });
 
-    queryParams.append("page", currentPage.toString());
+    queryParams.append("page", searchPage.toString());
 
     try {
       const response = await fetch(`/api/ctdiSearch.json?${queryParams}`);
@@ -172,8 +185,6 @@ export default function CTDIData() {
 
   return (
     <>
-      {/* <RootLayout title="Departure Dashboard"> */}
-      {/* <DepartureRoute> */}
       <div className="px-10 py-10">
         <div className="flex justify-between">
           <h1 className="text-4xl tracking-wide mb-6">CTDI DATA DASHBOARD</h1>
@@ -199,22 +210,6 @@ export default function CTDIData() {
           <div className="text-blue-950">
             <p className="text-fuchsia-50">Please select the data you want to filter by below.</p>
 
-            {/* Dropdown to select filters */}
-            {/* <select
-              multiple
-              onChange={(e) => {
-                const values = Array.from(e.target.selectedOptions, (option) => option.value);
-                setSelectedFilters(values);
-              }}
-              className="bg-blue-200 border p-2 mb-2"
-            >
-              <option value="parameter_uji">Parameter Uji</option>
-              <option value="instansi">Instansi</option>
-              <option value="data_pesawat">Data Pesawat</option>
-              <option value="date">Tanggal</option>
-              <option value="year">Tahun</option>
-            </select> */}
-
             <Select
               onChange={(selectedOptions) => {
                 setSelectedFilters(selectedOptions.map((option) => option.value));
@@ -229,10 +224,10 @@ export default function CTDIData() {
             <div className="flex">
               <div className="flex gap-4">
                 {/* {selectedFilters.includes("parameter_uji") && <input className="py-3 pl-1" type="text" placeholder="Parameter Uji" value={filters.parameter_uji} onChange={(e) => setFilters({ ...filters, parameter_uji: e.target.value })} />} */}
-                {selectedFilters.includes("instansi") && <input className="py-1 pl-1" type="text" placeholder="Instansi" value={filters.instansi} onChange={(e) => setFilters({ ...filters, instansi: e.target.value })} />}
+                {selectedFilters.includes("instansi") && <input className="py-1 pl-1" type="text" placeholder="Instansi" value={searchFilters.instansi} onChange={(e) => setSearchFilters({ ...searchFilters, instansi: e.target.value })} />}
                 {/* {selectedFilters.includes("data_pesawat") && <input className="py-1 pl-1" type="text" placeholder="Data Pesawat" value={filters.data_pesawat} onChange={(e) => setFilters({ ...filters, data_pesawat: e.target.value })} />}
                 {selectedFilters.includes("date") && <input type="date" value={filters.date} onChange={(e) => setFilters({ ...filters, date: e.target.value })} />} */}
-                {selectedFilters.includes("year") && <input className="py-1 pl-1" type="number" placeholder="Year" value={filters.year} onChange={(e) => setFilters({ ...filters, year: e.target.value })} />}
+                {selectedFilters.includes("year") && <input className="py-1 pl-1" type="number" placeholder="Year" value={searchFilters.year} onChange={(e) => setSearchFilters({ ...searchFilters, year: e.target.value })} />}
               </div>
 
               <span>
@@ -280,18 +275,19 @@ export default function CTDIData() {
       </div>
 
       <div className="mb-4">
-        <button className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50" disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => prev - 1)}>
+        {/* Pagination Controls */}
+        <button className="bg-slate-500 px-1 disabled:bg-gray-300" disabled={(isSearching ? searchPage : currentPage) === 1} onClick={() => (isSearching ? setSearchPage((prev) => prev - 1) : setCurrentPage((prev) => prev - 1))}>
           Previous
         </button>
-        <span className="mx-4 text-lg">
-          Page {currentPage} of {totalPages}
+
+        <span className="mx-1">
+          Page {isSearching ? searchPage : currentPage} of {totalPages}
         </span>
-        <button className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50" disabled={currentPage === totalPages} onClick={() => setCurrentPage((prev) => prev + 1)}>
+
+        <button className="bg-slate-500 px-1 disabled:bg-gray-300" disabled={(isSearching ? searchPage : currentPage) === totalPages} onClick={() => (isSearching ? setSearchPage((prev) => prev + 1) : setCurrentPage((prev) => prev + 1))}>
           Next
         </button>
       </div>
-      {/* </DepartureRoute> */}
-      {/* </RootLayout> */}
     </>
   );
 }

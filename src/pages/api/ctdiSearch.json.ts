@@ -6,7 +6,7 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ request, cookies }) => {
   const url = new URL(request.url);
-  console.log(url);
+  //console.log(url);
   const page = url.searchParams.get("page"); // Default to 1 if missing
   const instansi = url.searchParams.get("instansi");
   const year = url.searchParams.get("year");
