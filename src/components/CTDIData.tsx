@@ -242,7 +242,7 @@ export default function CTDIData() {
             </div>
           </div>
         )}
-
+        {isLoading ? <SpinnerCss /> : null}
         <table className="my-4 w-full border-collapse">
           <thead className="text-lg mb-5">
             <tr>
@@ -259,7 +259,7 @@ export default function CTDIData() {
           </thead>
           <tbody className="text-xl">{renderDepartures()}</tbody>
         </table>
-        {isLoading ? <SpinnerCss /> : null}
+
         {/* Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
