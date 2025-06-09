@@ -183,6 +183,19 @@ export default function CTDIData() {
     });
   };
 
+  useEffect(() => {
+    const getLatestData = async () => {
+      try {
+        const lastData = await fetch("/api/ctdiLastData.json");
+        console.log(lastData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    getLatestData();
+  }, []);
+
   return (
     <>
       <div className="px-10 py-10">
