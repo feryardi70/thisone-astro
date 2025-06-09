@@ -187,8 +187,8 @@ export default function CTDIData() {
     const getLatestData = async () => {
       try {
         const lastData = await fetch("/api/ctdiLastData.json");
-        const { ctdiLast } = await lastData.json();
-        console.log(ctdiLast);
+        const { data } = await lastData.json();
+        console.log(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
