@@ -1,5 +1,5 @@
-import { APIUrl } from "../../../lib/baseUrl";
-import { randstr } from "../../../lib/randstr";
+import { APIUrl } from "../../lib/baseUrl";
+import { randstr } from "../../lib/randstr";
 
 export async function getAllCTDIData(page) {
   const ctdiToken = import.meta.env.CTDI_SECRET;

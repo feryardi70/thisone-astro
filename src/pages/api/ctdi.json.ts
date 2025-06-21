@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
 import { verifyToken } from "../../lib/generateToken";
-//import { randstr } from "../../lib/randstr";
-//import { APIUrl } from "../../lib/baseUrl";
-import { editCTDIDataByDatabaseId, getAllCTDIData, getCTDIDataByDatabaseId, insertCTDIData } from "./data-access/ctdiDAL";
+import { editCTDIDataByDatabaseId, getAllCTDIData, getCTDIDataByDatabaseId, insertCTDIData } from "../data-access/ctdiDAL";
 
 export const prerender = false;
 
@@ -32,16 +30,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  //const ctdiToken = import.meta.env.CTDI_SECRET;
-
-  // const resp = await fetch(`${APIUrl}/api/ctdi.php?page=${page}`, {
-  //   method: "GET",
-  //   headers: {
-  //     Authorization: `Bearer ${ctdiToken}`,
-  //   },
-  // });
   const dataCTDI = await getAllCTDIData(page);
-  //const data = dataCTDI.data;
   //console.log(dataCTDI);
 
   return new Response(
@@ -89,25 +78,6 @@ export const PUT: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  // const ctdiToken = import.meta.env.CTDI_SECRET;
-  // const payload = {
-  //   id,
-  //   databaseId,
-  //   parameter_uji,
-  //   instansi,
-  //   data_pesawat,
-  //   CTDI_Vol_ukur,
-  //   CTDI_Vol_konsol,
-  //   deviasi,
-  //   tanggal_uji,
-  // };
-  // const resp = await fetch(`${APIUrl}/api/ctdi.php`, {
-  //   method: "PUT",
-  //   headers: {
-  //     Authorization: `Bearer ${ctdiToken}`,
-  //   },
-  //   body: JSON.stringify(payload),
-  // });
   const statusEdit = await editCTDIDataByDatabaseId(id, databaseId, parameter_uji, instansi, data_pesawat, CTDI_Vol_ukur, CTDI_Vol_konsol, deviasi, tanggal_uji);
   //console.log(dataCTDI);
 
@@ -155,26 +125,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     );
   }
 
-  // const ctdiToken = import.meta.env.CTDI_SECRET;
-  // const databaseId = randstr();
-  // const payload = {
-  //   databaseId,
-  //   parameter_uji,
-  //   instansi,
-  //   data_pesawat,
-  //   CTDI_Vol_ukur,
-  //   CTDI_Vol_konsol,
-  //   deviasi,
-  //   tanggal_uji,
-  // };
-
-  // const resp = await fetch(`${APIUrl}/api/ctdi.php`, {
-  //   method: "POST",
-  //   headers: {
-  //     Authorization: `Bearer ${ctdiToken}`,
-  //   },
-  //   body: JSON.stringify(payload),
-  // });
   const statusCTDI = await insertCTDIData(parameter_uji, instansi, data_pesawat, CTDI_Vol_ukur, CTDI_Vol_konsol, deviasi, tanggal_uji);
   //console.log(statusCTDI);
 
