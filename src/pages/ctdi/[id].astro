@@ -184,19 +184,23 @@ const selectedValue = ctdi.parameter_uji;
         });
 
         if (response.status == 200) {
+          // Handle success (e.g., show a success message or redirect)
           btnLoading.classList.toggle("hidden");
           btnSend.classList.toggle("hidden");
-          // Handle success (e.g., show a success message or redirect)
           alert("successfully update CTDI data");
 
           window.location.href = '/ctdi';
+        } else if(response.status == 401){
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
+          alert("sesi login expired");
         } else {
           btnLoading.classList.toggle("hidden");
           btnSend.classList.toggle("hidden");
           // Handle errors
           const errorData = await response.json();
-          console.error("Error updating departure:", errorData);
-          alert("Failed to update departure. Please try again.");
+          console.error("Error updating CTDI:", errorData);
+          alert("Failed to update CTDI data. Please refresh the page and try again.");
         }
       } catch (error) {
         btnLoading.classList.toggle("hidden");

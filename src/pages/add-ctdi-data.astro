@@ -1,7 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { verifyToken } from "../lib/generateToken";
 
 export const prerender = false;
+
+const authToken = Astro.cookies.get('auth_token')?.value;
+const decoded = verifyToken(authToken);
+
+
+if(!decoded){
+    return Astro.redirect("/login");
+} else {
+    console.log('ok');
+}
 
 const ctdi = {
     parameter_uji: "",
@@ -173,6 +184,7 @@ const ctdi = {
           },
           body: JSON.stringify(payload),
         });
+        //console.log(response);
 
         if (response.status == 201) {
           // Handle success (e.g., show a success message or redirect)
@@ -181,13 +193,17 @@ const ctdi = {
           alert("successfully add CTDI data");
 
           window.location.href = '/ctdi';
+        } else if(response.status == 401){
+          btnLoading.classList.toggle("hidden");
+          btnSend.classList.toggle("hidden");
+          alert("sesi login expired");
         } else {
           btnLoading.classList.toggle("hidden");
           btnSend.classList.toggle("hidden");
           // Handle errors
           const errorData = await response.json();
           console.error("Error updating CTDI:", errorData);
-          alert("Failed to add CTDI. Please try again.");
+          alert("Failed to add CTDI data. Please refresh the page and try again.");
         }
       } catch (error) {
         btnLoading.classList.toggle("hidden");
