@@ -5,18 +5,10 @@ export const prerender = false;
 
 export const GET: APIRoute = async ({ request }) => {
   //console.log(request);
-  const referer = request.headers.get("referer") || "";
+  //const referer = request.headers.get("referer") || "";
   const origin = request.headers.get("origin") || "";
   //console.log("Referer:", referer);
-
-  if(referer !== "http://thisone.my.id/") {
-    return new Response(
-      JSON.stringify({
-        msg: "unauthorized",
-      }),
-      { status: 401 },
-    );
-  }
+  //console.log("Origin:", origin);
 
   const token = generateToken();
   //console.log("Generated Token:", token);
