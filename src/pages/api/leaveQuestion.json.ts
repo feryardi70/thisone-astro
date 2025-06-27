@@ -21,7 +21,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       JSON.stringify({
         msg: "unauthorized",
       }),
-      { status: 401 }
+      { status: 401,
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+            }, }
     );
   }
 
@@ -32,7 +37,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       JSON.stringify({
         msg: "unauthorized, token was expired",
       }),
-      { status: 401 }
+      { status: 401,
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+            }, }
     );
   }
 
