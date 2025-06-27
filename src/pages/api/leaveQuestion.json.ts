@@ -12,70 +12,91 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const body = await request.json();
   const { nama, email, pesan } = body;
   //console.log("Referer:", referer);
-  //console.log("Origin:", origin);
-  //console.log("Token:", token);
-  //console.log("Body:", body);
+  console.log("Origin:", origin);
+  console.log("Token:", token);
+  console.log("Body:", body);
 
-  if (!token) {
-    return new Response(
-      JSON.stringify({
-        msg: "unauthorized",
-      }),
-      { status: 401,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": origin,
-                "Access-Control-Allow-Credentials": "true",
-            }, }
-    );
+  function checkandVerifyToken(token: string | undefined) {
+    if (!token) {
+      return false;
+    }
+    try {
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        console.error("Token is expired");
+        return false;
+      }else{
+        return true;
+      }
+    } catch (error) {
+      console.error("Token verification failed:", error);
+      return false;
+    }
   }
 
-  const decoded = verifyToken(token);
+  const isTokenValid = checkandVerifyToken(token);
 
-  if (!decoded) {
-    return new Response(
-      JSON.stringify({
-        msg: "unauthorized, token was expired",
-      }),
-      { status: 401,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": origin,
-                "Access-Control-Allow-Credentials": "true",
-            }, }
-    );
+//   if (!token) {
+//     return new Response(
+//       JSON.stringify({
+//         msg: "unauthorized",
+//       }),
+//       { status: 401,
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Access-Control-Allow-Origin": origin,
+//                 "Access-Control-Allow-Credentials": "true",
+//             }, }
+//     );
+//   }
+
+//   const decoded = verifyToken(token);
+//   console.log("Decoded:", decoded);
+
+//   if (!decoded) {
+//     return new Response(
+//       JSON.stringify({
+//         msg: "unauthorized, token was expired",
+//       }),
+//       { status: 401,
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Access-Control-Allow-Origin": origin,
+//                 "Access-Control-Allow-Credentials": "true",
+//             }, }
+//     );
+//   }
+  if(isTokenValid == true){
+      const statusComment = await insertComment(nama, email, pesan);
+    
+      if(statusComment == 'success'){
+          return new Response(
+            JSON.stringify({
+              msg: "success",
+            }),
+            { status: 201,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": origin,
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            }
+          );
+      } else{
+        return new Response(
+            JSON.stringify({
+              msg: "failed to insert comment",
+            }),
+            { status: 500,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": origin,
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            }
+          );
+      }
   }
-
-  const statusComment = await insertComment(nama, email, pesan);
-
-  if(statusComment == 'success'){
-      return new Response(
-        JSON.stringify({
-          msg: "success",
-        }),
-        { status: 201,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": origin,
-                "Access-Control-Allow-Credentials": "true",
-            },
-        }
-      );
-  } else{
-    return new Response(
-        JSON.stringify({
-          msg: "failed to insert comment",
-        }),
-        { status: 500,
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": origin,
-                "Access-Control-Allow-Credentials": "true",
-            },
-        }
-      );
-  }
-
 };
 
 // Handle preflight requests
