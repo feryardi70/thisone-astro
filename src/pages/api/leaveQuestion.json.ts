@@ -96,6 +96,19 @@ export const POST: APIRoute = async ({ request, cookies }) => {
             }
           );
       }
+  } else{
+    return new Response(
+      JSON.stringify({
+        msg: "unauthorized",
+      }),
+      { status: 401,
+          headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": origin,
+              "Access-Control-Allow-Credentials": "true",
+          },
+      }
+    );
   }
 };
 
