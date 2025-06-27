@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ request }) => {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": origin,
             "Access-Control-Allow-Credentials": "true",
-            "Set-Cookie": `contactToken=${token}; Path=/; HttpOnly; Max-Age=900`,
+            "Set-Cookie": `contactToken=${token}; Path=/; HttpOnly; SameSite=None; Max-Age=900`,
         },
     }
   );
