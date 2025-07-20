@@ -2,4 +2,4 @@
 export const baseUrl = "https://thisone-astro.netlify.app";
 
 // export const APIUrl = "http://localhost";
-export const APIUrl = "https://thisone.my.id";
+export const APIUrl = "https://thisonex.my.id";
